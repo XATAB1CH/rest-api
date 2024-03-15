@@ -23,7 +23,7 @@ func main() {
 
 	_, err := toml.DecodeFile(configPath, &config)
 	if err != nil {
-		log.Fatal(err) // сщсщсщсщсщ
+		log.Fatal(err) 
 	}
 
 	s := apiserver.New(config)
