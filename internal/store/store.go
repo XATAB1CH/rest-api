@@ -18,7 +18,7 @@ func New(config *Config) *Store {
 }
 
 func (s *Store) Open() error {
-	db, err := sql.Open("postgres", s.config.DatabaseURl)
+	db, err := sql.Open("postgres", "user=postgres password=anton132 dbname=restapi-dev sslmode=disable")
 	if err != nil {
 		return err
 	}
