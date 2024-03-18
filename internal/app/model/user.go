@@ -11,24 +11,26 @@ var validate *validator.Validate
 type User struct {
 	Id                int
 	Email             string `validate:"email"`
-	Password          string `validate:"custom"`
+	Password          string `validate:"min=6,max=32,password"`
 	EncryptedPassword string
 }
 
-func customFunc(fl validator.FieldLevel) bool {
-	u := fl.Field().Interface().(User)
+// Custom validation ОНО РАБОТАЕТ!!!!
+func PasswordValidate(fl validator.FieldLevel) bool {
+	u := fl.Parent().Interface().(User) //get user
 
-	if u.EncryptedPassword != "" {
+	if u.EncryptedPassword == "" && u.Password != "" {
 		return true
-	}
 
+	}
 	return false
 }
 
 // Validate
 func (u *User) Validate() error {
-	validate.RegisterValidation("custom", customFunc)
 	validate = validator.New(validator.WithRequiredStructEnabled())
+	validate.RegisterValidation("password", PasswordValidate) ///register custom validation
+
 	return validate.Struct(u)
 }
 
