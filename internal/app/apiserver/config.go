@@ -3,8 +3,8 @@ package apiserver
 import "github.com/XATAB1CH/rest-api/internal/store"
 
 type Config struct {
-	BinAddr  string `toml:"bin_addr"`
-	LogLevel string `toml:"log_level"`
+	BinAddr  string 
+	LogLevel string 
 	Store    *store.Config
 }
 
