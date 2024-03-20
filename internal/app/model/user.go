@@ -15,15 +15,13 @@ type User struct {
 	EncryptedPassword string
 }
 
-// Custom validation ОНО РАБОТАЕТ!!!!
+// Custom validation
 func PasswordValidate(fl validator.FieldLevel) bool {
 	u := fl.Parent().Interface().(User) //get user
-
-	if u.EncryptedPassword == "" && u.Password != "" {
-		return true
-
+	if u.EncryptedPassword == "" {
+		return false
 	}
-	return false
+	return true
 }
 
 // Validate
