@@ -1,4 +1,4 @@
-package store
+package sqlstore
 
 import "github.com/XATAB1CH/rest-api/internal/app/model"
 
