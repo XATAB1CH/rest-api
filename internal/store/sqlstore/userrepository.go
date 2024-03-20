@@ -1,6 +1,11 @@
 package sqlstore
 
-import "github.com/XATAB1CH/rest-api/internal/app/model"
+import (
+	"database/sql"
+
+	"github.com/XATAB1CH/rest-api/internal/app/model"
+	"github.com/XATAB1CH/rest-api/internal/store"
+)
 
 // UserRepository
 type UserRepository struct {
@@ -8,28 +13,22 @@ type UserRepository struct {
 }
 
 // Создание нового пользователя
-func (r *UserRepository) Create(u *model.User) (*model.User, error) {
+func (r *UserRepository) Create(u *model.User) error {
 
-	// Проверка на валидность
 	if err := u.Validate(); err != nil {
-		return nil, err
+		return err
 	}
 
-	// Хэширование пароля
 	if err := u.BeforeCreate(); err != nil {
-		return nil, err
+		return err
 	}
 
 	// Запись пользователя в БД
-	if err := r.store.db.QueryRow(
+	return r.store.db.QueryRow(
 		"INSERT INTO users (email, encrypted_password) VALUES ($1, $2) RETURNING id",
 		u.Email,
 		u.EncryptedPassword,
-	).Scan(&u.Id); err != nil {
-		return nil, err
-	}
-
-	return u, nil
+	).Scan(&u.ID)
 }
 
 // FindByEmail
@@ -39,10 +38,14 @@ func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
 		"SELECT id, email, encrypted_password FROM users WHERE email = $1",
 		email,
 	).Scan(
-		&u.Id,
+		&u.ID,
 		&u.Email,
 		&u.EncryptedPassword,
 	); err != nil {
+		if err == sql.ErrNoRows {
+			return nil, store.ErrorRecordNotFound
+		}
+
 		return nil, err
 	}
 

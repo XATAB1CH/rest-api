@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"database/sql"
 
+	"github.com/XATAB1CH/rest-api/internal/store"
 	_ "github.com/lib/pq"
 )
 
@@ -11,6 +12,7 @@ type Store struct {
 	userRepository *UserRepository
 }
 
+// New
 func New(db *sql.DB) *Store {
 	return &Store{
 		db: db,
@@ -18,7 +20,8 @@ func New(db *sql.DB) *Store {
 
 }
 
-func (s *Store) User() *UserRepository {
+// User
+func (s *Store) User() store.UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository
 	}

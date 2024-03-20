@@ -9,7 +9,7 @@ var validate *validator.Validate
 
 // User
 type User struct {
-	Id                int
+	ID                int
 	Email             string `validate:"email"`
 	Password          string `validate:"min=6,max=32,password"`
 	EncryptedPassword string

@@ -1,18 +1,16 @@
 package apiserver
 
-import "github.com/XATAB1CH/rest-api/internal/store"
-
+// Config
 type Config struct {
-	BinAddr  string 
-	LogLevel string 
-	Store    *store.Config
+	BindAddr    string `toml:"bind_addr"`
+	LogLevel    string `toml:"log_level"`
+	DatabaseURL string `toml:"database_url"`
 }
 
 // NewConfig
 func NewConfig() *Config {
 	return &Config{
-		BinAddr:  ":8080",
+		BindAddr: ":8080",
 		LogLevel: "debug",
-		Store:    store.NewConfig(),
 	}
 }
