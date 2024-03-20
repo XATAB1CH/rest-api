@@ -9,8 +9,8 @@ var validate *validator.Validate
 
 // User
 type User struct {
-	ID                int
-	Email             string `validate:"email"`
+	ID                int    `json:"id"`
+	Email             string `validate:"email" json:"email"`
 	Password          string `validate:"min=6,max=32,password"`
 	EncryptedPassword string
 }
