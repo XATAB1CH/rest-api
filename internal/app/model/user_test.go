@@ -7,15 +7,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-type testCase struct {
-	name    string
-	u       func() *model.User
-	isValid bool
-}
-
 func TestUser_Validate(t *testing.T) {
 
-	testCases := []testCase{
+	testCases := []struct {
+		name    string
+		u       func() *model.User
+		isValid bool
+	}{
 		{
 			name: "valid",
 			u: func() *model.User {
@@ -24,10 +22,32 @@ func TestUser_Validate(t *testing.T) {
 			isValid: true,
 		},
 		{
+			name: "with encrypted password",
+			u: func() *model.User {
+				u := model.TestUser(t)
+				u.Password = ""
+				u.EncryptedPassword = "encryptedpassword"
+
+				return u
+			},
+			isValid: false,
+		},
+		{
 			name: "empty email",
 			u: func() *model.User {
 				u := model.TestUser(t)
 				u.Email = ""
+
+				return u
+			},
+			isValid: false,
+		},
+		{
+			name: "invalid email",
+			u: func() *model.User {
+				u := model.TestUser(t)
+				u.Email = "invalid"
+
 				return u
 			},
 			isValid: false,
@@ -37,6 +57,7 @@ func TestUser_Validate(t *testing.T) {
 			u: func() *model.User {
 				u := model.TestUser(t)
 				u.Password = ""
+
 				return u
 			},
 			isValid: false,
@@ -45,7 +66,8 @@ func TestUser_Validate(t *testing.T) {
 			name: "short password",
 			u: func() *model.User {
 				u := model.TestUser(t)
-				u.Password = "123"
+				u.Password = "short"
+
 				return u
 			},
 			isValid: false,
@@ -61,7 +83,6 @@ func TestUser_Validate(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestUser_BeforeCreate(t *testing.T) {

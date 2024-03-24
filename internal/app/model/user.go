@@ -7,32 +7,33 @@ import (
 
 var validate *validator.Validate
 
-// User
+// User ...
 type User struct {
 	ID                int    `json:"id"`
 	Email             string `validate:"email" json:"email"`
-	Password          string `validate:"min=6,max=32,password"`
-	EncryptedPassword string
+	Password          string `validate:"min=6,max=32,compare" json:"password,omitempty"`
+	EncryptedPassword string `json:"-"`
 }
 
-// Custom validation
-func PasswordValidate(fl validator.FieldLevel) bool {
-	u := fl.Parent().Interface().(User) //get user
+// Custom validation ...
+func ComparePasswordValidate(fl validator.FieldLevel) bool {
+	u := fl.Parent().Interface().(User)
 	if u.EncryptedPassword == "" {
-		return false
+		return true
+
 	}
-	return true
+	return false
 }
 
-// Validate
+// Validate ...
 func (u *User) Validate() error {
 	validate = validator.New(validator.WithRequiredStructEnabled())
-	validate.RegisterValidation("password", PasswordValidate) ///register custom validation
+	validate.RegisterValidation("compare", ComparePasswordValidate)
 
 	return validate.Struct(u)
 }
 
-// BeforeCreate
+// BeforeCreate ...
 func (u *User) BeforeCreate() error {
 
 	if len(u.Password) > 0 {
@@ -46,7 +47,12 @@ func (u *User) BeforeCreate() error {
 	return nil
 }
 
-// Encrypt password
+// Sanitize ...
+func (u *User) Sanitize() {
+	u.Password = ""
+}
+
+// Encrypt password ...
 func encryptString(s string) (string, error) {
 	b, err := bcrypt.GenerateFromPassword([]byte(s), bcrypt.MinCost)
 	if err != nil {

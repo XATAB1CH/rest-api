@@ -5,13 +5,14 @@ import (
 	"github.com/XATAB1CH/rest-api/internal/store"
 )
 
+// UserRepository ...
 type UserRepository struct {
 	store *Store
-	users map[string]*model.User
+	users map[int]*model.User
 }
 
+// Create ...
 func (r *UserRepository) Create(u *model.User) error {
-
 	if err := u.Validate(); err != nil {
 		return err
 	}
@@ -20,18 +21,19 @@ func (r *UserRepository) Create(u *model.User) error {
 		return err
 	}
 
-	r.users[u.Email] = u
-	u.ID = len(r.users)
+	u.ID = len(r.users) + 1
+	r.users[u.ID] = u
 
 	return nil
 }
 
-// FIndByEmail
+// FindByEmail ...
 func (r *UserRepository) FindByEmail(email string) (*model.User, error) {
-	u, ok := r.users[email]
-	if !ok {
-		return nil, store.ErrorRecordNotFound
+	for _, u := range r.users {
+		if u.Email == email {
+			return u, nil
+		}
 	}
 
-	return u, nil
+	return nil, store.ErrorRecordNotFound
 }

@@ -5,16 +5,17 @@ import (
 	"github.com/XATAB1CH/rest-api/internal/store"
 )
 
+// Store ...
 type Store struct {
 	userRepository *UserRepository
 }
 
-// New
+// New ...
 func New() *Store {
 	return &Store{}
 }
 
-// User
+// User ...
 func (s *Store) User() store.UserRepository {
 	if s.userRepository != nil {
 		return s.userRepository
@@ -22,11 +23,7 @@ func (s *Store) User() store.UserRepository {
 
 	s.userRepository = &UserRepository{
 		store: s,
-	}
-
-	s.userRepository = &UserRepository{
-		store: s,
-		users: make(map[string]*model.User),
+		users: make(map[int]*model.User),
 	}
 
 	return s.userRepository

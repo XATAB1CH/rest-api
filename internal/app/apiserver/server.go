@@ -4,16 +4,20 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/XATAB1CH/rest-api/internal/app/model"
-	"github.com/XATAB1CH/rest-api/internal/store"
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+
+	"github.com/XATAB1CH/rest-api/internal/app/model"
+
+	"github.com/XATAB1CH/rest-api/internal/app/store"
+	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 type server struct {
-	router *mux.Router
-	logger *logrus.Logger
-	store  store.Store
+	router       *mux.Router
+	logger       *logrus.Logger
+	store        store.Store
+	sessionStore sessions.Store
 }
 
 type request struct {
@@ -29,6 +33,7 @@ func newServer(store store.Store) *server {
 	}
 
 	s.configureRouter()
+
 	return s
 }
 
@@ -41,7 +46,9 @@ func (s *server) configureRouter() {
 }
 
 func (s *server) handleUsersCreate() http.HandlerFunc {
+
 	return func(w http.ResponseWriter, r *http.Request) {
+
 		req := &request{}
 		if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 			s.error(w, r, http.StatusBadRequest, err)
@@ -52,12 +59,12 @@ func (s *server) handleUsersCreate() http.HandlerFunc {
 			Email:    req.Email,
 			Password: req.Password,
 		}
-
 		if err := s.store.User().Create(u); err != nil {
 			s.error(w, r, http.StatusUnprocessableEntity, err)
 			return
 		}
 
+		u.Sanitize()
 		s.respond(w, r, http.StatusCreated, u)
 	}
 }
